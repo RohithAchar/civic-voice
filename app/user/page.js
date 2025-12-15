@@ -116,7 +116,9 @@ export default async function UserPage({ searchParams }) {
   });
 
   const openCount = serialized.filter((i) => i.status !== "RESOLVED").length;
-  const resolvedCount = serialized.filter((i) => i.status === "RESOLVED").length;
+  const resolvedCount = serialized.filter(
+    (i) => i.status === "RESOLVED"
+  ).length;
   const total = serialized.length;
 
   const stats = [
@@ -171,11 +173,13 @@ export default async function UserPage({ searchParams }) {
                 <thead className="text-left text-zinc-600 dark:text-zinc-300">
                   <tr>
                     <th className="py-2 pr-4">Description</th>
-                    <th className="py-2 pr-4">Location</th>
-                    <th className="py-2 pr-4">Category</th>
+                    <th className="py-2 pr-4 hidden sm:table-cell">Location</th>
+                    <th className="py-2 pr-4 hidden md:table-cell">Category</th>
                     <th className="py-2 pr-4">Status</th>
-                    <th className="py-2 pr-4">Severity</th>
-                    <th className="py-2 pr-4">Submitted</th>
+                    <th className="py-2 pr-4 hidden sm:table-cell">Severity</th>
+                    <th className="py-2 pr-4 hidden md:table-cell">
+                      Submitted
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -196,13 +200,13 @@ export default async function UserPage({ searchParams }) {
                             {issue.description}
                           </div>
                         </td>
-                        <td className="py-2 pr-4 text-zinc-700 dark:text-zinc-200">
+                        <td className="py-2 pr-4 text-zinc-700 dark:text-zinc-200 hidden sm:table-cell">
                           {issue.locationLabel}
                         </td>
-                        <td className="py-2 pr-4 capitalize">
+                        <td className="py-2 pr-4 capitalize hidden md:table-cell">
                           {issue.issueType || "-"}
                         </td>
-                        <td className="py-2 pr-4">
+                        <td className="py-2 pr-4 hidden sm:table-cell">
                           <span
                             className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${statusClass(
                               issue.status
@@ -220,7 +224,7 @@ export default async function UserPage({ searchParams }) {
                             {issue.severity}
                           </span>
                         </td>
-                        <td className="py-2 pr-4 text-zinc-600 dark:text-zinc-400">
+                        <td className="py-2 pr-4 text-zinc-600 dark:text-zinc-400 hidden md:table-cell">
                           {new Date(issue.createdAt).toLocaleString()}
                         </td>
                       </tr>

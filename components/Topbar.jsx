@@ -36,6 +36,16 @@ export default function Topbar() {
             Home
           </Link>
           <Link
+            href="/explore"
+            className={`text-sm font-semibold transition ${
+              pathname === "/explore"
+                ? "text-primary"
+                : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
+            }`}
+          >
+            Explore
+          </Link>
+          <Link
             href="/issues"
             className={`text-sm font-semibold transition ${
               pathname === "/issues"

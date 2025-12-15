@@ -52,5 +52,14 @@ model Issue {
   userId String?
   user   User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  votes  Vote[]
+
   @@map("issues")
+}
+
+model Vote {
+  id        String   @id @default(uuid())
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
