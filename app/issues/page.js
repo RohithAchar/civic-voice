@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import IssuesTable from "@/components/IssuesTable";
 import { currentUser } from "@clerk/nextjs/server";
@@ -8,8 +9,26 @@ import { Shield } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
+// function isAdminEmail(user) {
+//   const env = process.env.ADMIN_EMAILS || "";
+//   const list = env
+//     .split(",")
+//     .map((e) => e.trim().toLowerCase())
+//     .filter(Boolean);
+//   const email = user?.emailAddresses?.[0]?.emailAddress?.toLowerCase();
+//   if (process.env.NODE_ENV === "development") {
+//     console.log("ADMIN_EMAILS list:", list);
+//     console.log("Current user email:", email, "isAdmin:", email ? list.includes(email) : false);
+//   }
+//   return email && list.includes(email);
+// }
+
 export default async function IssuesPage() {
   const user = await currentUser();
+
+  // if (user && isAdminEmail(user)) {
+  //   redirect("/admin/issues");
+  // }
 
   // If not logged in, show empty list + prompt
   let issues = [];
@@ -52,10 +71,18 @@ export default async function IssuesPage() {
             </Link>
           </div>
 
-          <div className="flex flex-1 justify-center">
+          <div className="flex flex-1 justify-center items-center gap-6">
             <Link href="/issues" className="text-sm font-semibold text-primary">
               My Issues
             </Link>
+            {user && (
+              <Link
+                href="/admin/issues"
+                className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
+              >
+                Admin
+              </Link>
+            )}
           </div>
 
           <div className="flex items-center gap-4">

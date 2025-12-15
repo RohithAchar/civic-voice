@@ -18,7 +18,9 @@ import {
   Search,
   X,
   Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 function Badge({ children }) {
   return (
@@ -30,22 +32,24 @@ function Badge({ children }) {
 
 const severityOrder = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
 
-export default function IssuesTable({ issues }) {
+export default function IssuesTable({ issues, isAdmin = false }) {
+  const [rows, setRows] = useState(issues);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [severityFilter, setSeverityFilter] = useState("");
   const [hasImage, setHasImage] = useState(false);
   const [sortAsc, setSortAsc] = useState(false);
+  const [updatingId, setUpdatingId] = useState(null);
 
   const issueTypes = useMemo(() => {
-    const set = new Set(issues.map((i) => i.issueType).filter(Boolean));
+    const set = new Set(rows.map((i) => i.issueType).filter(Boolean));
     return Array.from(set);
-  }, [issues]);
+  }, [rows]);
 
   const severities = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
 
   const filtered = useMemo(() => {
-    return issues
+    return rows
       .filter((i) => {
         if (typeFilter && i.issueType !== typeFilter) return false;
         if (severityFilter && i.severity !== severityFilter) return false;
@@ -74,6 +78,34 @@ export default function IssuesTable({ issues }) {
     setTypeFilter("");
     setSeverityFilter("");
     setHasImage(false);
+  };
+
+  const statusOptions = ["SUBMITTED", "ASSIGNED", "IN_PROGRESS", "RESOLVED"];
+
+  const handleStatusChange = async (id, status) => {
+    if (!status) return;
+    setUpdatingId(id);
+    try {
+      const res = await fetch(`/api/issues/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to update status");
+      }
+      setRows((prev) =>
+        prev.map((row) =>
+          row.id === id ? { ...row, status } : row
+        )
+      );
+      toast.success("Status updated");
+    } catch (err) {
+      toast.error(err.message || "Failed to update status");
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   return (
@@ -160,6 +192,7 @@ export default function IssuesTable({ issues }) {
               <TableHead>Type</TableHead>
               <TableHead>Severity</TableHead>
               <TableHead>Location</TableHead>
+              {isAdmin && <TableHead>Status</TableHead>}
               <TableHead>Submitted</TableHead>
               <TableHead>User</TableHead>
               <TableHead>Image</TableHead>
@@ -168,7 +201,7 @@ export default function IssuesTable({ issues }) {
           <TableBody>
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-zinc-500">
+                <TableCell colSpan={isAdmin ? 8 : 7} className="text-center text-zinc-500">
                   No complaints match the filters.
                 </TableCell>
               </TableRow>
@@ -201,6 +234,29 @@ export default function IssuesTable({ issues }) {
                     </div>
                   )}
                 </TableCell>
+              {isAdmin && (
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={issue.status}
+                      onChange={(e) =>
+                        handleStatusChange(issue.id, e.target.value)
+                      }
+                      disabled={updatingId === issue.id}
+                      className="h-9 rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+                    >
+                      {statusOptions.map((s) => (
+                        <option key={s} value={s}>
+                          {s.replace("_", " ")}
+                        </option>
+                      ))}
+                    </select>
+                    {updatingId === issue.id && (
+                      <Loader2 className="h-4 w-4 animate-spin text-zinc-500" />
+                    )}
+                  </div>
+                </TableCell>
+              )}
                 <TableCell className="text-sm text-zinc-600 dark:text-zinc-400">
                   {new Date(issue.createdAt).toLocaleString()}
                 </TableCell>

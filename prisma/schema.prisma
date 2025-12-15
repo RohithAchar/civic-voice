@@ -29,11 +29,19 @@ enum Severity {
   CRITICAL
 }
 
+enum IssueStatus {
+  SUBMITTED
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+}
+
 model Issue {
   id           String    @id @default(uuid())
   description  String
   issueType    String
   severity     Severity
+  status       IssueStatus @default(SUBMITTED)
   location     String?
   coordinates  String?
   locationName String?

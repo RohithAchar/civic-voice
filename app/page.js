@@ -24,6 +24,17 @@ export default async function Home() {
             >
               My Issues
             </Link>
+            {user &&
+              process.env.ADMIN_EMAILS?.toLowerCase().includes(
+                (user.emailAddresses[0]?.emailAddress || "").toLowerCase()
+              ) && (
+                <Link
+                  href="/admin/issues"
+                  className="ml-6 text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
+                >
+                  Admin
+                </Link>
+              )}
           </div>
 
           <div className="flex items-center gap-4">
