@@ -275,12 +275,15 @@ export default async function IssuesPage() {
 
           <hr className="border-zinc-200 dark:border-zinc-800" />
 
-          <IssuesCharts
-            categoryData={categoryChartData}
-            categoryConfig={categoryChartConfig}
-            resolutionData={resolutionTrendData}
-            resolutionConfig={resolutionTrendConfig}
-          />
+          {/* Hide heavy charts on very small screens to keep the page light */}
+          <div className="hidden sm:block">
+            <IssuesCharts
+              categoryData={categoryChartData}
+              categoryConfig={categoryChartConfig}
+              resolutionData={resolutionTrendData}
+              resolutionConfig={resolutionTrendConfig}
+            />
+          </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {stats.map((card) => {

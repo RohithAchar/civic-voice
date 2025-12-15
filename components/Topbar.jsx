@@ -122,10 +122,10 @@ export default function Topbar() {
 
       {/* Mobile dropdown with smooth slide / fade */}
       <div
-        className={`md:hidden border-t bg-white px-4 pb-3 pt-2 text-sm shadow-sm dark:bg-black transition-all duration-200 ease-out overflow-hidden ${
+        className={`md:hidden bg-white px-4 text-sm shadow-sm dark:bg-black transition-all duration-200 ease-out overflow-hidden ${
           open
-            ? "border-zinc-200 dark:border-zinc-800 max-h-64 opacity-100 translate-y-0"
-            : "border-transparent max-h-0 opacity-0 -translate-y-2 pointer-events-none"
+            ? "border-t border-zinc-200 dark:border-zinc-800 pt-2 pb-3 max-h-64 opacity-100 translate-y-0"
+            : "border-transparent pt-0 pb-0 max-h-0 opacity-0 -translate-y-2 pointer-events-none"
         }`}
       >
         <div className="ml-auto flex flex-col items-end gap-2 text-right">
