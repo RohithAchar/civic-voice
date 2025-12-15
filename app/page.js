@@ -11,11 +11,21 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-linear-to-b from-zinc-50 to-white dark:from-black dark:to-zinc-950 font-sans">
       <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="container mx-auto flex h-16 items-center px-4">
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-semibold">Civic Voice</h1>
           </div>
+
+          <div className="flex flex-1 justify-center">
+            <Link
+              href="/issues"
+              className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
+            >
+              Issues
+            </Link>
+          </div>
+
           <div className="flex items-center gap-4">
             {user ? (
               <>
