@@ -32,7 +32,7 @@ export default async function Home() {
             <div className="pt-8">
               {user ? (
                 <div className="space-y-6">
-                  <ReportIssueButton />
+                  <ReportIssueButton navigateOnly />
                 </div>
               ) : (
                 <div className="space-y-4">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
@@ -9,6 +10,7 @@ import { isAdminEmail } from "@/lib/isAdminEmail";
 
 export default function Topbar() {
   const { user, isSignedIn } = useUser();
+  const pathname = usePathname();
 
   const isAdmin = useMemo(() => isAdminEmail(user), [user]);
 
@@ -24,15 +26,43 @@ export default function Topbar() {
 
         <div className="flex flex-1 justify-center items-center gap-6">
           <Link
-            href="/issues"
-            className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
+            href="/"
+            className={`text-sm font-semibold transition ${
+              pathname === "/"
+                ? "text-primary"
+                : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
+            }`}
           >
-            My Issues
+            Home
+          </Link>
+          <Link
+            href="/issues"
+            className={`text-sm font-semibold transition ${
+              pathname === "/issues"
+                ? "text-primary"
+                : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
+            }`}
+          >
+            Issues
+          </Link>
+          <Link
+            href="/user"
+            className={`text-sm font-semibold transition ${
+              pathname === "/user"
+                ? "text-primary"
+                : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
+            }`}
+          >
+            User
           </Link>
           {isAdmin && (
             <Link
               href="/admin/issues"
-              className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
+              className={`text-sm font-semibold transition ${
+                pathname === "/admin/issues"
+                  ? "text-primary"
+                  : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
+              }`}
             >
               Admin
             </Link>
