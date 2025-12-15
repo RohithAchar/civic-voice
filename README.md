@@ -1,12 +1,153 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CivicVoice: Smart Citizen Engagement Platform
 
-## Features
+CivicVoice is a transparent, accountability-driven platform that bridges citizens and civic authorities, making civic issue reporting and resolution seamless and trackable.
 
-- ✅ Next.js 16 with App Router
-- ✅ Clerk Authentication
-- ✅ PostgreSQL with Prisma ORM
-- ✅ Shadcn UI Components
-- ✅ Automatic user sync to database on login
+## 🎯 The Problem
+
+In Bangalore, civic issues go unresolved not because authorities don't care, but because of broken communication:
+
+- BBMP receives 500+ complaints daily through phone calls, emails, and in-person visits
+- Citizens have **ZERO visibility** on complaint status after filing
+- No accountability - complaints disappear into a black hole
+- No data-driven decision making for municipalities
+- Citizens lose trust and stop reporting issues
+
+**Real Example:** A pothole near your college has been there for 3 months. People complain, but nobody knows if BBMP even received it, who's assigned to it, or when it'll be fixed.
+
+## 💡 The Solution
+
+CivicVoice is a transparent, accountability-driven platform that bridges citizens and civic authorities.
+
+### For Citizens:
+
+- Report ANY civic issue in 30 seconds (photo + location + description)
+- Track complaint status in real-time (submitted → assigned → in-progress → resolved)
+- See all complaints on a map - know what's happening in your neighborhood
+- Get notifications when your complaint is updated
+- Earn points and badges for active reporting (gamification)
+
+### For Municipal Authorities:
+
+- Centralized dashboard showing all complaints
+- Auto-categorization of issues using AI
+- Priority scoring based on severity, location, and number of reports
+- Route optimization for field workers (save time and fuel)
+- Analytics showing hotspots, trends, and resolution metrics
+
+### For Everyone:
+
+- Public transparency dashboard showing:
+  - Total complaints vs resolved
+  - Average resolution time
+  - Most reported issues by area
+  - Authority performance metrics
+
+## 🚀 Key Features
+
+### 1. Smart Complaint Submission
+
+- Take a photo → AI detects issue type (pothole, waste, broken light, etc.)
+- Auto-capture GPS location
+- Add description and severity
+- Submit in seconds
+
+### 2. Real-Time Tracking
+
+- Every complaint gets a unique ID
+- Status updates: Submitted → Assigned → In Progress → Resolved
+- Push notifications on status changes
+- Citizens can comment and add updates
+
+### 3. Interactive Map View
+
+- See all complaints in your area on a map
+- Filter by category (roads, waste, water, electricity)
+- Filter by status (pending, resolved)
+- Click any marker to see photos and details
+
+### 4. Admin Dashboard (For BBMP/Municipal Workers)
+
+- View all complaints in a sortable table
+- Filter by priority, category, area, date
+- Assign complaints to field workers
+- Update status and add resolution notes
+- Export reports for analysis
+
+### 5. Analytics & Insights
+
+- Heatmap showing complaint hotspots
+- Trends over time (are issues increasing/decreasing?)
+- Category breakdown (most reported issues)
+- Resolution rate and average time
+- Performance metrics per area/ward
+
+### 6. Gamification & Community Engagement
+
+- Earn points for reporting issues
+- Badges for active citizens ("Guardian of the City")
+- Leaderboard of top contributors
+- Share resolved issues on social media ("Look what we fixed!")
+
+## 🎨 User Journey
+
+### Citizen Flow:
+
+1. Opens app/website
+2. Clicks "Report Issue"
+3. Takes photo of pothole
+4. App auto-detects location and suggests category
+5. Adds brief description
+6. Submits
+7. Gets unique complaint ID
+8. Receives notification when BBMP assigns it to a worker
+9. Gets update when work is in progress
+10. Gets final notification when resolved with before/after photos
+
+### Authority Flow:
+
+1. Logs into admin dashboard
+2. Sees 50 new complaints today
+3. Filters by "high priority" and "roads"
+4. Assigns 10 complaints to Field Worker A
+5. Field Worker A gets notification with optimized route
+6. Updates status to "in progress"
+7. Completes work and uploads after-photo
+8. Marks as "resolved"
+9. Citizen gets notification automatically
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- **Next.js 16** - React framework with App Router
+- **React 19** - UI library
+- **Shadcn UI** - Beautiful, accessible component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **Lucide React** - Icon library
+
+### Backend & Database
+
+- **PostgreSQL** - Relational database
+- **Prisma ORM** - Type-safe database client
+- **Next.js API Routes** - Serverless API endpoints
+
+### Authentication
+
+- **Clerk** - Complete authentication solution
+- Automatic user sync to database on login
+
+### Media & Storage
+
+- **Cloudinary** - Image and video management platform
+  - Image upload and storage
+  - Automatic optimization and transformations
+  - CDN delivery for fast loading
+
+### Development Tools
+
+- **TypeScript/JavaScript** - Type safety and modern JS
+- **ESLint** - Code linting
+- **Prisma Studio** - Database GUI
 
 ## Getting Started
 
@@ -15,6 +156,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - Node.js 18+ installed
 - PostgreSQL database running
 - Clerk account ([Sign up here](https://clerk.com))
+- Cloudinary account ([Sign up here](https://cloudinary.com)) - for image storage
 
 ### Environment Variables
 
@@ -27,31 +169,47 @@ DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
 # Clerk Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
+
+# Cloudinary (Image Storage)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 ### Setup Steps
 
 1. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 2. **Set up your database:**
+
    ```bash
    npm run prisma:migrate
    ```
 
 3. **Configure Clerk:**
+
    - Sign up at [clerk.com](https://clerk.com) and create a new application
    - Copy your publishable key and secret key to `.env`
    - Users will automatically be saved to your database when they log in (no webhook setup needed!)
 
-4. **Run the development server:**
+4. **Configure Cloudinary:**
+
+   - Sign up at [cloudinary.com](https://cloudinary.com) (free tier available)
+   - Get your Cloud Name, API Key, and API Secret from the dashboard
+   - Add them to your `.env` file
+   - Cloudinary will handle all image uploads, storage, and optimization
+
+5. **Run the development server:**
+
    ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ### Database Management
 
