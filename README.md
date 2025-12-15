@@ -29,7 +29,7 @@ CivicVoice is a transparent, accountability-driven platform that bridges citizen
 ### For Municipal Authorities:
 
 - Centralized dashboard showing all complaints
-- Auto-categorization of issues using AI
+- Categorization of issues by type and severity
 - Priority scoring based on severity, location, and number of reports
 - Route optimization for field workers (save time and fuel)
 - Analytics showing hotspots, trends, and resolution metrics
@@ -46,7 +46,7 @@ CivicVoice is a transparent, accountability-driven platform that bridges citizen
 
 ### 1. Smart Complaint Submission
 
-- Take a photo → AI detects issue type (pothole, waste, broken light, etc.)
+- Take a photo and select issue type (pothole, waste, broken light, etc.)
 - Auto-capture GPS location
 - Add description and severity
 - Submit in seconds

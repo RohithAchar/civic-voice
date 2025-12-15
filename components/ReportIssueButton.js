@@ -2,16 +2,42 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, Upload, X } from "lucide-react";
+import { Camera, Upload, X, Loader2 } from "lucide-react";
 
 export default function ReportIssueButton() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [description, setDescription] = useState("");
+  const [issueType, setIssueType] = useState("");
+  const [location, setLocation] = useState("");
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState("");
   const [showCamera, setShowCamera] = useState(false);
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported in this browser.");
+      return;
+    }
+    setLocationError("");
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setLocation(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+        setLocationLoading(false);
+      },
+      (err) => {
+        setLocationError(err.message || "Unable to fetch location.");
+        setLocationLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+    );
+  };
 
   const handleFileSelect = (event) => {
     const file = event.target.files?.[0];
@@ -22,6 +48,7 @@ export default function ReportIssueButton() {
         setPreview(reader.result);
       };
       reader.readAsDataURL(file);
+      if (!location) getCurrentLocation();
     }
   };
 
@@ -65,6 +92,7 @@ export default function ReportIssueButton() {
           if (blob) {
             setImage(blob);
             setPreview(URL.createObjectURL(blob));
+            if (!location) getCurrentLocation();
             stopCamera();
           }
         },
@@ -95,12 +123,23 @@ export default function ReportIssueButton() {
   };
 
   const handleSubmit = () => {
-    if (image) {
-      // TODO: Handle image submission
-      console.log("Submitting image:", image);
-      // Reset after submission
-      handleRemoveImage();
-    }
+    if (!image) return;
+
+    const payload = {
+      description,
+      issueType,
+      location,
+      image,
+    };
+
+    // TODO: replace with real submit to backend
+    console.log("Submitting report:", payload);
+
+    // Reset after submission
+    handleRemoveImage();
+    setDescription("");
+    setIssueType("");
+    setLocation("");
   };
 
   return (
@@ -175,7 +214,7 @@ export default function ReportIssueButton() {
 
       {/* Image preview */}
       {preview && (
-        <div className="relative max-w-md mx-auto">
+        <div className="relative max-w-2xl mx-auto space-y-4">
           <div className="relative rounded-lg overflow-hidden border-2 border-zinc-200 dark:border-zinc-800">
             <img
               src={preview}
@@ -191,7 +230,82 @@ export default function ReportIssueButton() {
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <Button onClick={handleSubmit} size="lg" className="w-full mt-4">
+
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                Description
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe the issue..."
+                className="min-h-[100px] rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                Type of Civic Problem
+              </label>
+              <select
+                value={issueType}
+                onChange={(e) => setIssueType(e.target.value)}
+                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+              >
+                <option value="">Select a type</option>
+                <option value="pothole">Pothole / Road Damage</option>
+                <option value="waste">Garbage / Waste</option>
+                <option value="lighting">Street Light</option>
+                <option value="water">Water / Drainage</option>
+                <option value="electricity">Electricity</option>
+                <option value="public-safety">Public Safety</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                Location
+              </label>
+              <input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Share location or address"
+                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+              />
+              <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={getCurrentLocation}
+                  disabled={locationLoading}
+                  className="h-8"
+                >
+                  {locationLoading && (
+                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  )}
+                  Use current location
+                </Button>
+                {location && !locationLoading && (
+                  <span className="text-green-600 dark:text-green-400">
+                    Auto-detected
+                  </span>
+                )}
+                {locationError && (
+                  <span className="text-red-500">{locationError}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Button
+            onClick={handleSubmit}
+            size="lg"
+            className="w-full mt-2"
+            disabled={!description || !issueType || !location}
+          >
             Report This Issue
           </Button>
         </div>
