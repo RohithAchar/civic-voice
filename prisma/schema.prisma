@@ -17,5 +17,31 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  issues    Issue[]
+
   @@map("users")
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Issue {
+  id           String    @id @default(uuid())
+  description  String
+  issueType    String
+  severity     Severity
+  location     String?
+  coordinates  String?
+  locationName String?
+  imageUrl     String?
+  createdAt    DateTime  @default(now())
+
+  userId String?
+  user   User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("issues")
 }

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Camera, Upload, X, Loader2 } from "lucide-react";
 
 export default function ReportIssueButton() {
+  const { user } = useUser();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [description, setDescription] = useState("");
@@ -14,6 +16,9 @@ export default function ReportIssueButton() {
   const [coordinates, setCoordinates] = useState("");
   const [locationName, setLocationName] = useState("");
   const [locationAccuracy, setLocationAccuracy] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
   const [showCamera, setShowCamera] = useState(false);
@@ -148,30 +153,61 @@ export default function ReportIssueButton() {
   };
 
   const handleSubmit = () => {
-    if (!image) return;
+    if (!image || !description || !issueType || !severity || !location) return;
 
-    const payload = {
-      description,
-      issueType,
-      severity,
-      location,
-      coordinates,
-      locationName,
-      image,
-    };
+    setSubmitting(true);
+    setSubmitError("");
+    setSubmitSuccess(false);
 
-    // TODO: replace with real submit to backend
-    console.log("Submitting report:", payload);
+    const formData = new FormData();
+    const fileToSend =
+      image instanceof File
+        ? image
+        : new File([image], "photo.jpg", { type: image.type || "image/jpeg" });
 
-    // Reset after submission
-    handleRemoveImage();
-    setDescription("");
-    setIssueType("");
-    setSeverity("");
-    setLocation("");
-    setCoordinates("");
-    setLocationName("");
-    setLocationAccuracy(null);
+    formData.append("image", fileToSend);
+    formData.append("description", description);
+    formData.append("issueType", issueType);
+    formData.append("severity", severity.toUpperCase());
+    if (location) formData.append("location", location);
+    if (coordinates) formData.append("coordinates", coordinates);
+    if (locationName) {
+      formData.append("locationName", locationName);
+    } else if (coordinates) {
+      formData.append("locationName", coordinates);
+    } else if (location) {
+      formData.append("locationName", location);
+    }
+    if (user?.id) formData.append("userId", user.id);
+
+    fetch("/api/issues", {
+      method: "POST",
+      body: formData,
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "Failed to submit issue");
+        }
+        return res.json();
+      })
+      .then(() => {
+        setSubmitSuccess(true);
+        handleRemoveImage();
+        setDescription("");
+        setIssueType("");
+        setSeverity("");
+        setLocation("");
+        setCoordinates("");
+        setLocationName("");
+        setLocationAccuracy(null);
+      })
+      .catch((err) => {
+        setSubmitError(err.message);
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -306,10 +342,10 @@ export default function ReportIssueButton() {
                 className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
               >
                 <option value="">Select severity</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="CRITICAL">Critical</option>
               </select>
             </div>
 
@@ -365,10 +401,29 @@ export default function ReportIssueButton() {
             onClick={handleSubmit}
             size="lg"
             className="w-full mt-2"
-            disabled={!description || !issueType || !severity || !location}
+            disabled={
+              submitting || !description || !issueType || !severity || !location
+            }
           >
-            Report This Issue
+            {submitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Submitting...
+              </span>
+            ) : (
+              "Report This Issue"
+            )}
           </Button>
+
+          {(submitError || submitSuccess) && (
+            <div
+              className={`text-sm ${
+                submitError ? "text-red-600" : "text-green-600"
+              }`}
+            >
+              {submitError ? submitError : "Issue submitted successfully."}
+            </div>
+          )}
         </div>
       )}
     </div>
