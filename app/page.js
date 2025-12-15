@@ -22,7 +22,7 @@ export default async function Home() {
               href="/issues"
               className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
             >
-              Issues
+              My Issues
             </Link>
           </div>
 

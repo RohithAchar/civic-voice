@@ -11,21 +11,30 @@ export const dynamic = "force-dynamic";
 export default async function IssuesPage() {
   const user = await currentUser();
 
-  const issues = await prisma.issue.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      description: true,
-      issueType: true,
-      severity: true,
-      location: true,
-      coordinates: true,
-      locationName: true,
-      imageUrl: true,
-      createdAt: true,
-      user: { select: { email: true, firstName: true, lastName: true } },
-    },
-  });
+  // If not logged in, show empty list + prompt
+  let issues = [];
+  if (user) {
+    issues = await prisma.issue.findMany({
+      where: {
+        user: {
+          clerkId: user.id,
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        description: true,
+        issueType: true,
+        severity: true,
+        location: true,
+        coordinates: true,
+        locationName: true,
+        imageUrl: true,
+        createdAt: true,
+        user: { select: { email: true, firstName: true, lastName: true } },
+      },
+    });
+  }
 
   const serialized = issues.map((i) => ({
     ...i,
@@ -45,7 +54,7 @@ export default async function IssuesPage() {
 
           <div className="flex flex-1 justify-center">
             <Link href="/issues" className="text-sm font-semibold text-primary">
-              Issues
+              My Issues
             </Link>
           </div>
 
