@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import SyncUser from "@/components/SyncUser";
+import Topbar from "@/components/Topbar";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <SyncUser />
+          <Topbar />
           {children}
           <Toaster />
         </body>

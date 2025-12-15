@@ -1,65 +1,14 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ReportIssueButton from "@/components/ReportIssueButton";
-import { MapPin, Shield, TrendingUp, Users } from "lucide-react";
+import { MapPin, TrendingUp, Users } from "lucide-react";
 
 export default async function Home() {
   const user = await currentUser();
 
   return (
     <div className="flex min-h-screen flex-col bg-linear-to-b from-zinc-50 to-white dark:from-black dark:to-zinc-950 font-sans">
-      <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto flex h-16 items-center px-4">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-semibold">Civic Voice</h1>
-          </div>
-
-          <div className="flex flex-1 justify-center">
-            <Link
-              href="/issues"
-              className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
-            >
-              My Issues
-            </Link>
-            {user &&
-              process.env.ADMIN_EMAILS?.toLowerCase().includes(
-                (user.emailAddresses[0]?.emailAddress || "").toLowerCase()
-              ) && (
-                <Link
-                  href="/admin/issues"
-                  className="ml-6 text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:text-primary dark:hover:text-primary transition"
-                >
-                  Admin
-                </Link>
-              )}
-          </div>
-
-          <div className="flex items-center gap-4">
-            {user ? (
-              <>
-                <span className="hidden sm:inline text-sm text-zinc-600 dark:text-zinc-400">
-                  Welcome,{" "}
-                  {user.firstName || user.emailAddresses[0]?.emailAddress}
-                </span>
-                <UserButton afterSignOutUrl="/" />
-              </>
-            ) : (
-              <div className="flex gap-2">
-                <Button asChild variant="ghost">
-                  <Link href="/login">Login</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/sign-up">Get Started</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="container mx-auto px-4 py-16 sm:py-24">
