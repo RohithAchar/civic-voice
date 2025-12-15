@@ -11,6 +11,8 @@ export default function ReportIssueButton({
   ctaText = "Get Started",
   navigateOnly = false, // when true, just redirect to /user without opening camera
   skipNavigate = false, // when true, do not redirect before camera (for /user modal)
+  onClickStart, // optional callback before starting capture/navigation
+  inlinePreview = false, // when true, render preview/form inline instead of slide-over
 } = {}) {
   const { user } = useUser();
   const router = useRouter();
@@ -88,6 +90,8 @@ export default function ReportIssueButton({
   };
 
   const handleTakePicture = () => {
+    if (onClickStart) onClickStart();
+
     if (navigateOnly) {
       router.push("/user");
       return;
@@ -205,7 +209,6 @@ export default function ReportIssueButton({
       })
       .then(() => {
         toast.success("Issue submitted successfully");
-        console.log("Issue submitted successfully");
         handleRemoveImage();
         setDescription("");
         setIssueType("");
@@ -285,8 +288,144 @@ export default function ReportIssueButton({
         className="hidden"
       />
 
-      {/* Image preview & form in a slide-over */}
-      {preview && (
+      {/* Image preview & form (inline or slide-over) */}
+      {preview && inlinePreview && (
+        <div className="mt-6 w-full max-w-3xl mx-auto space-y-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
+          <div className="relative rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-black">
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-full h-auto max-h-[420px] object-contain"
+            />
+            <Button
+              onClick={handleRemoveImage}
+              variant="destructive"
+              size="icon"
+              className="absolute top-2 right-2"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                Description
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe the issue..."
+                className="min-h-[120px] rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                Type of Civic Problem
+              </label>
+              <select
+                value={issueType}
+                onChange={(e) => setIssueType(e.target.value)}
+                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+              >
+                <option value="">Select a type</option>
+                <option value="pothole">Pothole / Road Damage</option>
+                <option value="waste">Garbage / Waste</option>
+                <option value="lighting">Street Light</option>
+                <option value="water">Water / Drainage</option>
+                <option value="electricity">Electricity</option>
+                <option value="public-safety">Public Safety</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                Severity
+              </label>
+              <select
+                value={severity}
+                onChange={(e) => setSeverity(e.target.value)}
+                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+              >
+                <option value="">Select severity</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                Location
+              </label>
+              <input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Share location or address"
+                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+              />
+              <div className="flex flex-col gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={getCurrentLocation}
+                    disabled={locationLoading}
+                    className="h-8"
+                  >
+                    {locationLoading && (
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    )}
+                    Use current location
+                  </Button>
+                  {coordinates && !locationLoading && (
+                    <span className="text-green-600 dark:text-green-400">
+                      {coordinates}
+                    </span>
+                  )}
+                  {locationAccuracy && !locationLoading && (
+                    <span className="text-zinc-500 dark:text-zinc-400">
+                      ±{Math.round(locationAccuracy)}m
+                    </span>
+                  )}
+                  {locationError && (
+                    <span className="text-red-500">{locationError}</span>
+                  )}
+                </div>
+                {locationName && (
+                  <span className="text-zinc-600 dark:text-zinc-300">
+                    {locationName}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Button
+            onClick={handleSubmit}
+            size="lg"
+            className="w-full mt-2"
+            disabled={
+              submitting || !description || !issueType || !severity || !location
+            }
+          >
+            {submitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Submitting...
+              </span>
+            ) : (
+              "Report This Issue"
+            )}
+          </Button>
+        </div>
+      )}
+
+      {!inlinePreview && preview && (
         <div className="fixed inset-0 z-40 flex bg-black/30 backdrop-blur-sm">
           <div className="ml-auto h-full w-full max-w-3xl bg-white dark:bg-zinc-950 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 overflow-y-auto">
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur px-4 py-3">

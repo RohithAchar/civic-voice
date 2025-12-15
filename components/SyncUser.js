@@ -2,15 +2,15 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SyncUser() {
   const { user, isLoaded } = useUser();
   const [synced, setSynced] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (isLoaded && user && !synced) {
-      console.log("🔄 Syncing user to database...", user.id);
-
       // Sync user to database when they log in
       fetch("/api/users/sync", {
         method: "POST",
@@ -31,7 +31,7 @@ export default function SyncUser() {
         .then((data) => {
           if (data.success) {
             setSynced(true);
-            console.log("✅ User synced to database:", data.user);
+            router.refresh(); // revalidate/refresh the next page after login
           } else {
             console.error("❌ Sync failed:", data.error);
           }

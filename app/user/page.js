@@ -2,14 +2,21 @@ import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import AddIssueDialog from "@/components/AddIssueDialog";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function UserPage() {
+export default async function UserPage({ searchParams }) {
   const user = await currentUser();
   if (!user) {
     redirect("/login");
   }
+
+  const pageSize = 10;
+  const page =
+    searchParams?.page && !isNaN(parseInt(searchParams.page, 10))
+      ? Math.max(1, parseInt(searchParams.page, 10))
+      : 1;
 
   const buildLocationDisplay = (issue) => {
     const locName =
@@ -63,13 +70,19 @@ export default async function UserPage() {
     }
   };
 
-  const issues = await prisma.issue.findMany({
-    where: {
-      user: {
-        clerkId: user.id,
-      },
+  const where = {
+    user: {
+      clerkId: user.id,
     },
+  };
+
+  const totalCount = await prisma.issue.count({ where });
+
+  const issues = await prisma.issue.findMany({
+    where,
     orderBy: { createdAt: "desc" },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
     select: {
       id: true,
       description: true,
@@ -84,6 +97,8 @@ export default async function UserPage() {
       user: { select: { email: true, firstName: true, lastName: true } },
     },
   });
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   const serialized = issues.map((i) => ({
     ...i,
@@ -157,7 +172,7 @@ export default async function UserPage() {
                   {serialized.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={4}
+                        colSpan={6}
                         className="py-6 text-center text-zinc-500 dark:text-zinc-400"
                       >
                         No issues reported yet.
@@ -217,6 +232,35 @@ export default async function UserPage() {
                   )}
                 </tbody>
               </table>
+            </div>
+            <div className="mt-4 flex items-center justify-between text-sm text-zinc-600 dark:text-zinc-400">
+              <span>
+                Page {page} of {totalPages} &middot; {totalCount} total
+              </span>
+              <div className="flex gap-2">
+                <Link
+                  href={page <= 2 ? "/user" : `/user?page=${page - 1}`}
+                  aria-disabled={page === 1}
+                  className={`rounded-md border px-3 py-1 ${
+                    page === 1
+                      ? "pointer-events-none opacity-50 border-zinc-200 dark:border-zinc-800"
+                      : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  Prev
+                </Link>
+                <Link
+                  href={`/user?page=${Math.min(totalPages, page + 1)}`}
+                  aria-disabled={page >= totalPages}
+                  className={`rounded-md border px-3 py-1 ${
+                    page >= totalPages
+                      ? "pointer-events-none opacity-50 border-zinc-200 dark:border-zinc-800"
+                      : "border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  Next
+                </Link>
+              </div>
             </div>
           </div>
         </div>

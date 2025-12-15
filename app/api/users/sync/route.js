@@ -4,9 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST() {
   try {
-    console.log("📥 Sync API called");
     const user = await currentUser();
-    console.log("👤 Current user:", user ? user.id : "null");
 
     if (!user) {
       console.error("❌ No user found");
@@ -14,8 +12,6 @@ export async function POST() {
     }
 
     const email = user.emailAddresses[0]?.emailAddress || "";
-    console.log("📧 User email:", email);
-    console.log("🔄 Upserting user to database...");
 
     // Sync user to database
     const dbUser = await prisma.user.upsert({
@@ -36,7 +32,6 @@ export async function POST() {
       },
     });
 
-    console.log("✅ User saved to database:", dbUser.id);
     return NextResponse.json({ success: true, user: dbUser });
   } catch (error) {
     console.error("❌ Error syncing user:", error);

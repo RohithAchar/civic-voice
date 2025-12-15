@@ -18,8 +18,6 @@ export async function POST(req) {
       formData.get("locationName")?.toString().trim() || null;
     const clerkUserId = formData.get("userId")?.toString().trim() || null;
 
-    console.log("clerkUserId", clerkUserId);
-
     const severity = severityRaw?.toUpperCase() ?? null;
 
     const allowedSeverity = new Set(["LOW", "MEDIUM", "HIGH", "CRITICAL"]);
