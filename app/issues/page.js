@@ -3,6 +3,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import IssuesCharts from "@/components/IssuesCharts";
 import IgnoredIssuesSection from "@/components/IgnoredIssuesSection";
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
+  TrendingUp,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -221,21 +227,43 @@ export default async function IssuesPage() {
     },
   };
 
+  const resolutionRate =
+    totalCount > 0 ? Math.round((resolvedCount / totalCount) * 100) : 0;
+
   const stats = [
-    { label: "Open Issues", value: openCount },
-    { label: "Resolved", value: resolvedCount },
-    { label: "Total Reported", value: totalCount },
+    {
+      label: "Open Issues",
+      value: openCount,
+      icon: AlertTriangle,
+      accent: "bg-amber-50 text-amber-700",
+    },
+    {
+      label: "Resolved",
+      value: resolvedCount,
+      icon: CheckCircle2,
+      accent: "bg-emerald-50 text-emerald-700",
+    },
+    {
+      label: "Total Reported",
+      value: totalCount,
+      icon: Activity,
+      accent: "bg-sky-50 text-sky-700",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50 flex flex-col">
       <main className="flex-1">
-        <div className="container mx-auto px-4 py-10 space-y-8">
+        <div className="container mx-auto max-w-8xl px-4 py-10 space-y-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
+              <p className="text-[11px] font-semibold tracking-[0.2em] text-primary mb-1 uppercase">
+                Insights
+              </p>
               <h1 className="text-3xl font-semibold">Reported Complaints</h1>
               <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                View and track all complaints reported in your area.
+                View and track all complaints reported in your area, with live
+                analytics.
               </p>
             </div>
             <div className="sm:min-w-[200px] flex sm:justify-end">
@@ -255,17 +283,43 @@ export default async function IssuesPage() {
           />
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {stats.map((card) => (
-              <div
-                key={card.label}
-                className="rounded-lg bg-white dark:bg-zinc-900/60 px-6 py-6 shadow-sm border border-zinc-200 dark:border-zinc-800"
-              >
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  {card.label}
-                </p>
-                <p className="mt-2 text-2xl font-semibold">{card.value}</p>
-              </div>
-            ))}
+            {stats.map((card) => {
+              const Icon = card.icon;
+              return (
+                <div
+                  key={card.label}
+                  className="rounded-xl bg-white dark:bg-zinc-900/60 px-6 py-6 shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-md transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${card.accent}`}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                      {card.label}
+                    </div>
+                  </div>
+                  <p className="text-2xl font-semibold">{card.value}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-200 border border-emerald-100 dark:border-emerald-800">
+              <CheckCircle2 className="h-3 w-3" />
+              <span>
+                Approx. <span className="font-semibold">{resolutionRate}%</span>{" "}
+                of reported issues have been resolved.
+              </span>
+            </div>
+            <div className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-sky-700 dark:bg-sky-900/20 dark:text-sky-200 border border-sky-100 dark:border-sky-800">
+              <TrendingUp className="h-3 w-3" />
+              <span>
+                Use votes to push the most important issues to the top.
+              </span>
+            </div>
           </div>
 
           {ignoredSerialized.length > 0 && (

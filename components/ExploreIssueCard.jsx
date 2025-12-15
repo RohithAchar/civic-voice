@@ -70,45 +70,63 @@ export default function ExploreIssueCard({ issue }) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <button className="w-full text-left rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow transition-all overflow-hidden">
-          <div className="relative">
-            <div className="w-full aspect-square bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
-              {issue.imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={issue.imageUrl}
-                  alt="Issue"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="h-full w-full flex items-center justify-center text-zinc-500">
-                  <ImageIcon className="h-6 w-6" />
-                </div>
-              )}
+      <div className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col">
+        <DialogTrigger asChild>
+          <button className="w-full text-left">
+            <div className="relative">
+              <div className="w-full aspect-[4/3] bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+                {issue.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={issue.imageUrl}
+                    alt="Issue"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-zinc-500">
+                    <ImageIcon className="h-6 w-6" />
+                  </div>
+                )}
+              </div>
+              <span
+                className={`absolute top-2 right-2 inline-flex items-center rounded-full px-2 py-1 text-[10px] font-medium ${statusClass(
+                  issue.status
+                )}`}
+              >
+                {issue.status.replace("_", " ")}
+              </span>
             </div>
-            <span
-              className={`absolute top-2 right-2 inline-flex items-center rounded-full px-2 py-1 text-[10px] font-medium ${statusClass(
-                issue.status
-              )}`}
-            >
-              {issue.status.replace("_", " ")}
-            </span>
-          </div>
-          <div className="px-4 py-3 space-y-2">
-            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50 line-clamp-2">
-              {issue.description}
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1">
-              {issue.mainArea}
-            </p>
-            <div className="flex items-center justify-between text-xs text-zinc-500">
-              <span>{issue.severity}</span>
-              <span>{votes} vote{votes === 1 ? "" : "s"}</span>
+            <div className="px-4 pt-3 pb-2 space-y-1.5">
+              <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50 line-clamp-2">
+                {issue.description}
+              </p>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                {issue.mainArea}
+              </p>
+              <div className="flex items-center justify-between text-[11px] text-zinc-500">
+                <span>{issue.severity}</span>
+                <span>
+                  {votes} vote{votes === 1 ? "" : "s"}
+                </span>
+              </div>
             </div>
-          </div>
-        </button>
-      </DialogTrigger>
+          </button>
+        </DialogTrigger>
+        <div className="border-t border-zinc-200 dark:border-zinc-800 px-4 py-2.5 flex items-center justify-between text-xs">
+          <span className="text-zinc-500 dark:text-zinc-400">
+            {votes} vote{votes === 1 ? "" : "s"}
+          </span>
+          <Button
+            type="button"
+            size="sm"
+            className="h-8 px-3 text-xs"
+            onClick={handleVote}
+            disabled={loading}
+          >
+            {loading ? "Voting..." : hasVoted ? "Voted" : "Vote"}
+          </Button>
+        </div>
+      </div>
 
       <DialogContent>
         <DialogHeader>
@@ -159,20 +177,7 @@ export default function ExploreIssueCard({ issue }) {
           )}
         </div>
 
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-sm text-zinc-600 dark:text-zinc-300">
-            {votes} vote{votes === 1 ? "" : "s"}
-          </span>
-          <Button
-            type="button"
-            size="sm"
-            className="h-9"
-            onClick={handleVote}
-            disabled={loading}
-          >
-            {loading ? "Voting..." : hasVoted ? "Voted" : "Vote"}
-          </Button>
-        </div>
+        {/* Voting is on the card itself for quick access */}
       </DialogContent>
     </Dialog>
   );
