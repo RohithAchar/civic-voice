@@ -1,6 +1,6 @@
 # CivicVoice: Smart Citizen Engagement Platform
 
-CivicVoice is a transparent, accountability-driven platform that bridges citizens and civic authorities, making civic issue reporting and resolution seamless and trackable.
+CivicVoice is a transparent, accountability-driven platform that bridges citizens and civic authorities. **Current hackathon MVP:** capture an issue and email it straight to BBMP so it lands in the right inbox immediately.
 
 ## 🎯 The Problem
 
@@ -20,13 +20,10 @@ CivicVoice is a transparent, accountability-driven platform that bridges citizen
 
 ### For Citizens:
 
-- Report ANY civic issue in 30 seconds (photo + location + description)
-- Track complaint status in real-time (submitted → assigned → in-progress → resolved)
-- See all complaints on a map - know what's happening in your neighborhood
-- Get notifications when your complaint is updated
-- Earn points and badges for active reporting (gamification)
+- Report any civic issue in under a minute (photo + location + description + severity)
+- Email goes directly to BBMP (MVP flow)
 
-### For Municipal Authorities:
+### For Municipal Authorities (future):
 
 - Centralized dashboard showing all complaints
 - Categorization of issues by type and severity
@@ -34,7 +31,7 @@ CivicVoice is a transparent, accountability-driven platform that bridges citizen
 - Route optimization for field workers (save time and fuel)
 - Analytics showing hotspots, trends, and resolution metrics
 
-### For Everyone:
+### For Everyone (future):
 
 - Public transparency dashboard showing:
   - Total complaints vs resolved
@@ -42,51 +39,21 @@ CivicVoice is a transparent, accountability-driven platform that bridges citizen
   - Most reported issues by area
   - Authority performance metrics
 
-## 🚀 Key Features
+## 🚀 Current MVP (Hackathon)
 
-### 1. Smart Complaint Submission
+1. Take a photo or upload one (camera-first mobile flow)
+2. Auto-capture GPS location (with manual override)
+3. Add description, category, and severity
+4. We generate an email and send it directly to BBMP
+5. You get a simple confirmation that it was sent
 
-- Take a photo and select issue type (pothole, waste, broken light, etc.)
-- Auto-capture GPS location
-- Add description and severity
-- Submit in seconds
+## 🔜 Roadmap (post-MVP)
 
-### 2. Real-Time Tracking
-
-- Every complaint gets a unique ID
-- Status updates: Submitted → Assigned → In Progress → Resolved
-- Push notifications on status changes
-- Citizens can comment and add updates
-
-### 3. Interactive Map View
-
-- See all complaints in your area on a map
-- Filter by category (roads, waste, water, electricity)
-- Filter by status (pending, resolved)
-- Click any marker to see photos and details
-
-### 4. Admin Dashboard (For BBMP/Municipal Workers)
-
-- View all complaints in a sortable table
-- Filter by priority, category, area, date
-- Assign complaints to field workers
-- Update status and add resolution notes
-- Export reports for analysis
-
-### 5. Analytics & Insights
-
-- Heatmap showing complaint hotspots
-- Trends over time (are issues increasing/decreasing?)
-- Category breakdown (most reported issues)
-- Resolution rate and average time
-- Performance metrics per area/ward
-
-### 6. Gamification & Community Engagement
-
-- Earn points for reporting issues
-- Badges for active citizens ("Guardian of the City")
-- Leaderboard of top contributors
-- Share resolved issues on social media ("Look what we fixed!")
+- Real-time tracking and status updates
+- Interactive map of all issues
+- Admin dashboard for authorities
+- Analytics (hotspots, trends, resolution metrics)
+- Gamification (points, badges, leaderboards)
 
 ## 🎨 User Journey
 

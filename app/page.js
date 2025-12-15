@@ -9,7 +9,7 @@ export default async function Home() {
   const user = await currentUser();
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-zinc-50 to-white dark:from-black dark:to-zinc-950 font-sans">
+    <div className="flex min-h-screen flex-col bg-linear-to-b from-zinc-50 to-white dark:from-black dark:to-zinc-950 font-sans">
       <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
@@ -20,7 +20,8 @@ export default async function Home() {
             {user ? (
               <>
                 <span className="hidden sm:inline text-sm text-zinc-600 dark:text-zinc-400">
-                  Welcome, {user.firstName || user.emailAddresses[0]?.emailAddress}
+                  Welcome,{" "}
+                  {user.firstName || user.emailAddresses[0]?.emailAddress}
                 </span>
                 <UserButton afterSignOutUrl="/" />
               </>
@@ -46,13 +47,14 @@ export default async function Home() {
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-black dark:text-zinc-50">
                 Report Civic Issues.
                 <br />
-                <span className="text-primary">Track Progress.</span>
+                <span className="text-primary">Email BBMP instantly.</span>
                 <br />
-                Make a Difference.
+                Ship the MVP for the hackathon.
               </h1>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
-                Your voice matters. Report potholes, broken lights, waste issues, and more. 
-                Track your complaints in real-time and see your city improve.
+                Snap a photo, add details, and we send it straight to BBMP via
+                email. A fast, simple MVP to get issues in front of the right
+                people during the hackathon.
               </p>
             </div>
 
@@ -68,15 +70,20 @@ export default async function Home() {
                     Sign in to report issues
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button asChild size="lg" className="text-base px-8 py-6 h-auto">
-                      <Link href="/sign-up">
-                        Get Started
-                      </Link>
+                    <Button
+                      asChild
+                      size="lg"
+                      className="text-base px-8 py-6 h-auto"
+                    >
+                      <Link href="/sign-up">Get Started</Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="text-base px-8 py-6 h-auto">
-                      <Link href="/login">
-                        Sign In
-                      </Link>
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="outline"
+                      className="text-base px-8 py-6 h-auto"
+                    >
+                      <Link href="/login">Sign In</Link>
                     </Button>
                   </div>
                 </div>
@@ -89,7 +96,7 @@ export default async function Home() {
         <section className="container mx-auto px-4 py-16 border-t border-zinc-200 dark:border-zinc-800">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-12 text-black dark:text-zinc-50">
-              How It Works
+              How the MVP Works
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center space-y-4 p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900/50">
@@ -97,10 +104,11 @@ export default async function Home() {
                   <MapPin className="h-6 w-6" />
                 </div>
                 <h3 className="text-xl font-semibold text-black dark:text-zinc-50">
-                  Report in Seconds
+                  Capture & Describe
                 </h3>
                 <p className="text-zinc-600 dark:text-zinc-400">
-                  Take a photo, add location, and describe the issue. It takes less than 30 seconds.
+                  Take a photo, add location, category, and severity in under a
+                  minute.
                 </p>
               </div>
 
@@ -109,10 +117,10 @@ export default async function Home() {
                   <TrendingUp className="h-6 w-6" />
                 </div>
                 <h3 className="text-xl font-semibold text-black dark:text-zinc-50">
-                  Track Progress
+                  Auto Email to BBMP
                 </h3>
                 <p className="text-zinc-600 dark:text-zinc-400">
-                  Get real-time updates on your complaint status from submission to resolution.
+                  We package your report and send it directly to BBMP via email.
                 </p>
               </div>
 
@@ -121,10 +129,10 @@ export default async function Home() {
                   <Users className="h-6 w-6" />
                 </div>
                 <h3 className="text-xl font-semibold text-black dark:text-zinc-50">
-                  Community Impact
+                  Simple Confirmation
                 </h3>
                 <p className="text-zinc-600 dark:text-zinc-400">
-                  See all reported issues on a map. Know what's happening in your neighborhood.
+                  You get a confirmation once your report email is sent to BBMP.
                 </p>
               </div>
             </div>

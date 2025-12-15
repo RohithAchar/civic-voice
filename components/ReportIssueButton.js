@@ -9,7 +9,11 @@ export default function ReportIssueButton() {
   const [preview, setPreview] = useState(null);
   const [description, setDescription] = useState("");
   const [issueType, setIssueType] = useState("");
+  const [severity, setSeverity] = useState("");
   const [location, setLocation] = useState("");
+  const [coordinates, setCoordinates] = useState("");
+  const [locationName, setLocationName] = useState("");
+  const [locationAccuracy, setLocationAccuracy] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
   const [showCamera, setShowCamera] = useState(false);
@@ -17,6 +21,21 @@ export default function ReportIssueButton() {
   const cameraInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+
+  const reverseGeocode = async (lat, lon) => {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data?.display_name) {
+        setLocationName(data.display_name);
+      }
+    } catch (err) {
+      console.error("Reverse geocoding failed:", err);
+    }
+  };
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -28,7 +47,13 @@ export default function ReportIssueButton() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        setLocation(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+        const coordString = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+        setCoordinates(coordString);
+        setLocationAccuracy(pos.coords.accuracy);
+        if (!location) {
+          setLocation(coordString);
+        }
+        reverseGeocode(latitude, longitude);
         setLocationLoading(false);
       },
       (err) => {
@@ -128,7 +153,10 @@ export default function ReportIssueButton() {
     const payload = {
       description,
       issueType,
+      severity,
       location,
+      coordinates,
+      locationName,
       image,
     };
 
@@ -139,7 +167,11 @@ export default function ReportIssueButton() {
     handleRemoveImage();
     setDescription("");
     setIssueType("");
+    setSeverity("");
     setLocation("");
+    setCoordinates("");
+    setLocationName("");
+    setLocationAccuracy(null);
   };
 
   return (
@@ -266,6 +298,23 @@ export default function ReportIssueButton() {
 
             <div className="grid gap-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                Severity
+              </label>
+              <select
+                value={severity}
+                onChange={(e) => setSeverity(e.target.value)}
+                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+              >
+                <option value="">Select severity</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
                 Location
               </label>
               <input
@@ -274,27 +323,39 @@ export default function ReportIssueButton() {
                 placeholder="Share location or address"
                 className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none ring-offset-2 placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500"
               />
-              <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={getCurrentLocation}
-                  disabled={locationLoading}
-                  className="h-8"
-                >
-                  {locationLoading && (
-                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+              <div className="flex flex-col gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={getCurrentLocation}
+                    disabled={locationLoading}
+                    className="h-8"
+                  >
+                    {locationLoading && (
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    )}
+                    Use current location
+                  </Button>
+                  {coordinates && !locationLoading && (
+                    <span className="text-green-600 dark:text-green-400">
+                      {coordinates}
+                    </span>
                   )}
-                  Use current location
-                </Button>
-                {location && !locationLoading && (
-                  <span className="text-green-600 dark:text-green-400">
-                    Auto-detected
+                  {locationAccuracy && !locationLoading && (
+                    <span className="text-zinc-500 dark:text-zinc-400">
+                      ±{Math.round(locationAccuracy)}m
+                    </span>
+                  )}
+                  {locationError && (
+                    <span className="text-red-500">{locationError}</span>
+                  )}
+                </div>
+                {locationName && (
+                  <span className="text-zinc-600 dark:text-zinc-300">
+                    {locationName}
                   </span>
-                )}
-                {locationError && (
-                  <span className="text-red-500">{locationError}</span>
                 )}
               </div>
             </div>
@@ -304,7 +365,7 @@ export default function ReportIssueButton() {
             onClick={handleSubmit}
             size="lg"
             className="w-full mt-2"
-            disabled={!description || !issueType || !location}
+            disabled={!description || !issueType || !severity || !location}
           >
             Report This Issue
           </Button>
