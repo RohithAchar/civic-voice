@@ -19,7 +19,7 @@ export default function Topbar() {
     <>
       <Link
         href="/"
-        className={`text-sm font-semibold transition ${
+        className={`text-base md:text-sm font-semibold transition pr-2 md:pr-0 ${
           pathname === "/"
             ? "text-primary"
             : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
@@ -29,7 +29,7 @@ export default function Topbar() {
       </Link>
       <Link
         href="/explore"
-        className={`text-sm font-semibold transition ${
+        className={`text-base md:text-sm font-semibold transition pr-2 md:pr-0 ${
           pathname === "/explore"
             ? "text-primary"
             : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
@@ -39,7 +39,7 @@ export default function Topbar() {
       </Link>
       <Link
         href="/issues"
-        className={`text-sm font-semibold transition ${
+        className={`text-base md:text-sm font-semibold transition pr-2 md:pr-0 ${
           pathname === "/issues"
             ? "text-primary"
             : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
@@ -49,7 +49,7 @@ export default function Topbar() {
       </Link>
       <Link
         href="/user"
-        className={`text-sm font-semibold transition ${
+        className={`text-base md:text-sm font-semibold transition pr-2 md:pr-0 ${
           pathname === "/user"
             ? "text-primary"
             : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
@@ -60,7 +60,7 @@ export default function Topbar() {
       {isAdmin && (
         <Link
           href="/admin/issues"
-          className={`text-sm font-semibold transition ${
+          className={`text-base md:text-sm font-semibold transition pr-2 md:pr-0 ${
             pathname === "/admin/issues"
               ? "text-primary"
               : "text-zinc-700/70 dark:text-zinc-200/70 hover:text-primary dark:hover:text-primary"
