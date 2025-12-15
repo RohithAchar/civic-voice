@@ -1,6 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import AddIssueDialog from "@/components/AddIssueDialog";
+import UserQuickTable from "@/components/UserQuickTable";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -105,9 +106,18 @@ export default async function UserPage({ searchParams }) {
     createdAt: i.createdAt.toISOString(),
   }));
 
-  const openCount = issues.filter((i) => i.status !== "RESOLVED").length;
-  const resolvedCount = issues.filter((i) => i.status === "RESOLVED").length;
-  const total = issues.length;
+  const withExtras = serialized.map((issue) => {
+    const { label } = buildLocationDisplay(issue);
+    return {
+      ...issue,
+      shortId: issue.id.replace(/-/g, "").slice(-4),
+      locationLabel: label,
+    };
+  });
+
+  const openCount = serialized.filter((i) => i.status !== "RESOLVED").length;
+  const resolvedCount = serialized.filter((i) => i.status === "RESOLVED").length;
+  const total = serialized.length;
 
   const stats = [
     { label: "Open Issues", value: openCount },
@@ -169,7 +179,7 @@ export default async function UserPage({ searchParams }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                  {serialized.length === 0 ? (
+                  {withExtras.length === 0 ? (
                     <tr>
                       <td
                         colSpan={6}
@@ -179,7 +189,7 @@ export default async function UserPage({ searchParams }) {
                       </td>
                     </tr>
                   ) : (
-                    serialized.map((issue) => (
+                    withExtras.map((issue) => (
                       <tr key={issue.id}>
                         <td className="py-2 pr-4">
                           <div className="font-medium text-zinc-900 dark:text-zinc-100">
@@ -187,21 +197,7 @@ export default async function UserPage({ searchParams }) {
                           </div>
                         </td>
                         <td className="py-2 pr-4 text-zinc-700 dark:text-zinc-200">
-                          {(() => {
-                            const { label, url } = buildLocationDisplay(issue);
-                            return url ? (
-                              <a
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline"
-                              >
-                                {label}
-                              </a>
-                            ) : (
-                              label
-                            );
-                          })()}
+                          {issue.locationLabel}
                         </td>
                         <td className="py-2 pr-4 capitalize">
                           {issue.issueType || "-"}
@@ -262,6 +258,20 @@ export default async function UserPage({ searchParams }) {
                 </Link>
               </div>
             </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 w-full">
+            <UserQuickTable
+              title="Open issues"
+              issues={withExtras.filter((i) => i.status !== "RESOLVED")}
+            />
+            <UserQuickTable
+              title="Resolved issues"
+              issues={withExtras.filter((i) => i.status === "RESOLVED")}
+            />
+            <UserQuickTable
+              title="Critical issues"
+              issues={withExtras.filter((i) => i.severity === "CRITICAL")}
+            />
           </div>
         </div>
       </main>

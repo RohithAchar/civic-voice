@@ -42,6 +42,7 @@ model Issue {
   issueType    String
   severity     Severity
   status       IssueStatus @default(SUBMITTED)
+  assignedTo   String?
   location     String?
   coordinates  String?
   locationName String?

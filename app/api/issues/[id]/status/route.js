@@ -19,14 +19,26 @@ function isAdmin(user) {
   return email && list.includes(email);
 }
 
-export async function PATCH(req, { params }) {
+export async function PATCH(req) {
   try {
     const user = await currentUser();
     if (!user || !isAdmin(user)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const url = new URL(req.url);
+    const segments = url.pathname.split("/").filter(Boolean);
+    const issuesIndex = segments.indexOf("issues");
+    const id =
+      issuesIndex !== -1 && segments.length > issuesIndex + 1
+        ? segments[issuesIndex + 1]
+        : null;
+    if (!id) {
+      return NextResponse.json(
+        { error: "Missing issue id" },
+        { status: 400 }
+      );
+    }
     const body = await req.json().catch(() => ({}));
     const statusRaw = body.status;
     const status = typeof statusRaw === "string" ? statusRaw.toUpperCase() : null;
