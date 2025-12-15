@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Camera, Upload, X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ReportIssueButton() {
   const { user } = useUser();
@@ -17,8 +18,6 @@ export default function ReportIssueButton() {
   const [locationName, setLocationName] = useState("");
   const [locationAccuracy, setLocationAccuracy] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
   const [showCamera, setShowCamera] = useState(false);
@@ -156,8 +155,6 @@ export default function ReportIssueButton() {
     if (!image || !description || !issueType || !severity || !location) return;
 
     setSubmitting(true);
-    setSubmitError("");
-    setSubmitSuccess(false);
 
     const formData = new FormData();
     const fileToSend =
@@ -192,7 +189,7 @@ export default function ReportIssueButton() {
         return res.json();
       })
       .then(() => {
-        setSubmitSuccess(true);
+        toast.success("Issue submitted successfully");
         handleRemoveImage();
         setDescription("");
         setIssueType("");
@@ -203,7 +200,7 @@ export default function ReportIssueButton() {
         setLocationAccuracy(null);
       })
       .catch((err) => {
-        setSubmitError(err.message);
+        toast.error(err.message || "Failed to submit");
       })
       .finally(() => {
         setSubmitting(false);
@@ -424,6 +421,26 @@ export default function ReportIssueButton() {
               {submitError ? submitError : "Issue submitted successfully."}
             </div>
           )}
+        </div>
+      )}
+
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div
+            className={`flex items-start gap-2 rounded-md px-4 py-3 shadow-lg text-sm ${
+              toast.type === "error"
+                ? "bg-red-600 text-white"
+                : "bg-green-600 text-white"
+            }`}
+          >
+            <span>{toast.message}</span>
+            <button
+              onClick={() => setToast(null)}
+              className="ml-2 text-white/80 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       )}
     </div>
