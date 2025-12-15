@@ -55,11 +55,11 @@ export default async function Home() {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-black dark:text-zinc-50">
-                Report Civic Issues.
+                Civic Voice
                 <br />
-                <span className="text-primary">Email BBMP instantly.</span>
-                <br />
-                Ship the MVP for the hackathon.
+                <span className="text-primary">
+                  Turn local problems into visible action.
+                </span>
               </h1>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
                 Snap a photo, add details, and we send it straight to BBMP via
