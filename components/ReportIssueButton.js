@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Camera, Upload, X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ReportIssueButton() {
   const { user } = useUser();
@@ -188,6 +189,7 @@ export default function ReportIssueButton() {
         return res.json();
       })
       .then(() => {
+        toast.success("Issue submitted successfully");
         console.log("Issue submitted successfully");
         handleRemoveImage();
         setDescription("");
@@ -199,6 +201,7 @@ export default function ReportIssueButton() {
         setLocationAccuracy(null);
       })
       .catch((err) => {
+        toast.error("Failed to submit issue");
         console.error("Failed to submit issue:", err.message);
       })
       .finally(() => {
